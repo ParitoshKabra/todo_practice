@@ -1,9 +1,8 @@
 from django.forms.fields import DateTimeField
 from django.shortcuts import redirect, render, HttpResponse
 from .models import TodoList, TodoItem
-from django import forms
-from django.contrib.admin.widgets import AdminDateWidget, AdminTimeWidget, AdminSplitDateTime
-from django.forms import SplitDateTimeField
+import Todo_Application.forms
+from Todo_Application.forms import DTForms
 from datetime import datetime
 
 from django.utils.dateparse import parse_datetime
@@ -15,9 +14,7 @@ def get_aware_datetime(date_str):
         ret = make_aware(ret)
     return ret
 
-class DTForms(forms.Form):
-    title = forms.CharField(max_length=64)
-    date_time_input = SplitDateTimeField(widget=AdminSplitDateTime())
+
 
 
 def index(request):

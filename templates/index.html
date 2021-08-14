@@ -13,12 +13,40 @@
           color: red;
           margin-left:0;
       }
+      .success{
+        display:inline-block;
+        color:green;
+        width:30%;
+        margin-left:auto;
+      }
       .utility{
         display: flex;
         flex-direction:row;
       }
       .utility .elem{
         margin: 10px;
+      }
+      
+     
+      li{
+        position:relative;
+        width:100%;
+        padding:10px;
+        display:flex;
+        margin:5px;
+        align-items:center;
+      }
+      li>button{
+        position:absolute;
+        right:0;
+        
+      }
+      .due_date_status{
+        display:none;
+        color:red;
+        width:30%;
+        margin-left:auto;
+        margin-right:0;
       }
     </style>    
   </head>
@@ -72,12 +100,18 @@
               </div>
             </div>
         
-          <ul class="list-group">
+          <ul class="list-group inner">
                 {% for item in items %}
                   {% if item.todo_list == todolist %}
-                  <li class="list-group-items list-group-item-success">
-                  {{item.title}}
-                  </li>
+                    <li class="list-group-items list-group-item-primary">
+                    <span class="title">{{item.title}}</span> 
+                    {% if item.checked == False %}
+                    <span class="due_date_status error">Due: {{item.due_date}}</span>
+                    {% else %}
+                    <span class="success">Done! </span>
+                    {% endif %}
+                    <button type="button" class="btn btn-info">Info</button>
+                    </li>
                   {% endif %}
                 {% endfor %}
             {% endfor %}
@@ -101,4 +135,29 @@
     -->
     
   </body>
+  <script>
+    let items = document.querySelectorAll('#item-info');
+    let parents = document.querySelectorAll('.inner');
+    let span = document.querySelectorAll('.info')
+    console.log(items)
+    console.log(parents)
+    let info = document.querySelectorAll('.btn-info')
+    info.forEach(item =>{
+      let toggle = true;
+      item.addEventListener('click', (event)=>{
+          if(toggle){
+            item.innerText = 'Hide Info';
+            item.previousSibling["previousSibling"].style.display = 'inline-block';
+            toggle = false;
+          }
+         else{
+           item.innerText = 'Info';
+            item.previousSibling["previousSibling"].style.display = 'none';
+
+           toggle = true;
+         }
+      })
+    })
+    
+  </script>
 </html>
