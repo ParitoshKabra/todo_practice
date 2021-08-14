@@ -5,3 +5,4 @@ from django.forms import SplitDateTimeField
 class DTForms(forms.Form):
     title = forms.CharField(max_length=64)
     date_time_input = SplitDateTimeField(widget=AdminSplitDateTime())
+    checked = forms.BooleanField(initial=False, required=False)

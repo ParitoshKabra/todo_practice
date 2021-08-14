@@ -1,7 +1,7 @@
 from django.forms.fields import DateTimeField
 from django.shortcuts import redirect, render, HttpResponse
 from .models import TodoList, TodoItem
-import Todo_Application.forms
+from django import forms
 from Todo_Application.forms import DTForms
 from datetime import datetime
 
@@ -35,17 +35,39 @@ def index(request):
     return render(request, "index.html", context)
 
 def update(request, list_id):
-    if request.method == "GET":
-        form = DTForms()
-        lst = TodoList.objects.get(id=list_id)
-        items = TodoItem.objects.filter(todo_list=lst)
-        context = {
-            'list':lst,
-            'items': items,
-            'form':form
-        }
-        return render(request, "update.html",context)
+    lst = TodoList.objects.get(id=list_id)
+    items = TodoItem.objects.filter(todo_list=lst)
+    context = {
+        'list':lst,
+        'items': items,
+    }
+    return render(request, "update.html",context)
 
+def update_item(request, id):
+    t = TodoItem.objects.get(id=id)
+    forms = DTForms()
+    forms.fields['title'].initial = t.title
+    forms.fields['date_time_input'].initial = t.due_date
+    if request.method == "GET":
+        context={
+            'form':forms,
+            'item': t,
+            'list': t.todo_list
+        }
+        return render(request, "updateitem.html",context)
+    title = request.POST['title']
+    date = request.POST['date_time_input_0']
+    date = date.replace('-','/')
+    time = request.POST['date_time_input_1']
+    datetime_str = date+" "+time
+    datetime_object = datetime.strptime(datetime_str, '%Y/%m/%d %H:%M:%S')
+    t.title=title 
+    t.checked=False
+    if request.POST.get('checked', False):
+        t.checked=True
+    t.due_date=datetime_object
+    t.save()
+    return redirect("/")
 
 def create(request):
     if request.method == "GET":
@@ -67,6 +89,7 @@ def delete(request, list_id):
 
 def add_item(request, list_id):
     form = DTForms()
+    form.fields['checked'].widget = forms.HiddenInput()
     if request.method == "GET": 
         return render(request, "additem.html",{'form':form})
     title = request.POST['title']
@@ -76,7 +99,7 @@ def add_item(request, list_id):
     datetime_str = date+" "+time
     datetime_object = datetime.strptime(datetime_str, '%Y/%m/%d %H:%M:%S')
     # datetime_object = get_aware_datetime(datetime_str)
-    a2 = TodoItem(title=title, checked=False, due_date=datetime_object, todo_list=TodoList.objects.get(id=list_id))
+    a2 = TodoItem(title=title, checked=request.POST['checked'], due_date=datetime_object, todo_list=TodoList.objects.get(id=list_id))
     a2.save()
     return redirect('/')
 
@@ -86,6 +109,9 @@ def delete_item(request, id):
     list_id = t.todo_list.id
     t.delete()
     return redirect(f'/update/{list_id}')
+
+
+
 # Create your views here.
 
 
