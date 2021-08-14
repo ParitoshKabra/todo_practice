@@ -35,7 +35,17 @@ def index(request):
     return render(request, "index.html", context)
 
 def update(request, list_id):
-    return HttpResponse("this is our update page")
+    if request.method == "GET":
+        form = DTForms()
+        lst = TodoList.objects.get(id=list_id)
+        items = TodoItem.objects.filter(todo_list=lst)
+        context = {
+            'list':lst,
+            'items': items,
+            'form':form
+        }
+        return render(request, "update.html",context)
+
 
 def create(request):
     if request.method == "GET":
@@ -46,7 +56,8 @@ def create(request):
     items = TodoItem.objects.all()
     context = {
         'todolists': list_items,
-        'items': items
+        'items': items,
+        
     }
     return redirect('/')
 
@@ -65,12 +76,16 @@ def add_item(request, list_id):
     datetime_str = date+" "+time
     datetime_object = datetime.strptime(datetime_str, '%Y/%m/%d %H:%M:%S')
     # datetime_object = get_aware_datetime(datetime_str)
-    print(datetime_object.date())
     a2 = TodoItem(title=title, checked=False, due_date=datetime_object, todo_list=TodoList.objects.get(id=list_id))
     a2.save()
-    print(a2.due_date)
-    print(title, datetime_object)
     return redirect('/')
+
+def delete_item(request, id):
+    t = TodoItem.objects.get(id=id)
+    print(t)
+    list_id = t.todo_list.id
+    t.delete()
+    return redirect(f'/update/{list_id}')
 # Create your views here.
 
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{% load  static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>Add Item</title>
+    <style>
+    .btn{
+        margin-top:10px;
+    }
+    </style>
+    <script src="{% url 'js-catalog' %}"></script>
+    <script src="{% static '/admin/js/core.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
+    <style>
+    li{
+        position:relative;
+        width:100%;
+        padding:20px;
+        display:flex;
+        margin:5px;
+        align-items:center;
+        justify-content:space-between;
+    }
+    
+    .due_date_status{
+      color:red;
+    }
+    button{
+        padding:10px;
+        margin:10px;
+    }
+    </style>
+</head>
+<body>
+<ul class="list-group inner">
+    {% for item in items %}
+      {% if item.todo_list == list %}
+        <li class="list-group-items list-group-item-primary">
+        <span class="title">{{item.title}}</span> 
+        {% if item.checked == False %}
+        <span class="due_date_status error">Due: {{item.due_date}}</span>
+        {% else %}
+        <span class="success">Done! </span>
+        {% endif %}
+        <div>
+            <button>Update Item</button>
+            <button onclick="location.href='/delitem/{{item.id}}'">Delete Item</button>
+        </div>
+        </li>
+      {% endif %}
+    {% endfor %}
+</ul>
+<form action="" method="post">
+  {% csrf_token %}
+    {{form.as_p}}
+    {{form.media}}
+  <button type="submit">Update</button>
+</form>
+
+</body>
+
+</html>
